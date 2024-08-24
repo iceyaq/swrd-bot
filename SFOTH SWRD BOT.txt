@@ -1,0 +1,141 @@
+-- Anti-chat logging function with detailed error handling
+local function antiChatLogging()
+    local success, err = pcall(function()
+        local replicatedStorage = game:GetService("ReplicatedStorage")
+        local chatEvents = replicatedStorage:WaitForChild("DefaultChatSystemChatEvents")
+
+        -- Override the SayMessageRequest to block chat logging
+        local originalFireServer = chatEvents.SayMessageRequest.FireServer
+        chatEvents.SayMessageRequest.FireServer = function(...)
+            -- Override behavior to avoid chat logging
+            pcall(function()
+                -- Suppress chat message sending
+                originalFireServer(...)
+            end)
+        end
+    end)
+
+    if not success then
+        warn("Error in antiChatLogging: " .. err)
+    end
+end
+
+-- Function to kill all players with detailed error handling
+local function killAllPlayers()
+    local success, err = pcall(function()
+        local players = game:GetService("Players")
+        for _, player in ipairs(players:GetPlayers()) do
+            if player.Character then
+                local descendants = player.Character:GetDescendants()
+                for _, descendant in ipairs(descendants) do
+                    if descendant:IsA("Humanoid") then
+                        descendant.Health = 0
+                    end
+                end
+            end
+        end
+    end)
+
+    if not success then
+        warn("Error in killAllPlayers: " .. err)
+    end
+end
+
+-- Function to spin the bot very fast
+local function spinBot()
+    local success, err = pcall(function()
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local humanoidRootPart = player.Character.HumanoidRootPart
+            while true do
+                pcall(function()
+                    -- Rapid rotation
+                    humanoidRootPart.CFrame = humanoidRootPart.CFrame * CFrame.Angles(0, math.rad(360), 0)
+                end)
+                wait(0.1) -- Adjust spin speed as needed
+            end
+        end
+    end)
+
+    if not success then
+        warn("Error in spinBot: " .. err)
+    end
+end
+
+-- Function to spam chat messages with detailed error handling
+local function spamChat()
+    local success, err = pcall(function()
+        local chatService = game:GetService("Chat")
+        while true do
+            pcall(function()
+                chatService:Chat(game.Players.LocalPlayer.Character.Head, "SWRD BOT MADE BY MISTAKE AND RUX0_0", Enum.ChatColor.Red)
+            end)
+            wait(1) -- Adjust wait time as needed
+        end
+    end)
+
+    if not success then
+        warn("Error in spamChat: " .. err)
+    end
+end
+
+-- Function to use getgenv() and getfenv() for debugging or customization
+local function debugEnvironments()
+    local success, err = pcall(function()
+        -- Print global environment
+        print("Global environment:", getgenv())
+        
+        -- Print function environment
+        local function sampleFunction()
+            print("Function environment:", getfenv(sampleFunction))
+        end
+        sampleFunction()
+    end)
+
+    if not success then
+        warn("Error in debugEnvironments: " .. err)
+    end
+end
+
+-- Function to create GUI with error handling
+local function createGUI()
+    local success, err = pcall(function()
+        -- Create a simple GUI for demonstration purposes
+        local screenGui = Instance.new("ScreenGui")
+        screenGui.Name = "CustomGUI"
+        screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 200, 0, 100)
+        frame.Position = UDim2.new(0.5, -100, 0.5, -50)
+        frame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        frame.Parent = screenGui
+
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Size = UDim2.new(1, 0, 1, 0)
+        textLabel.Text = "SWRD BOT ACTIVE"
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        textLabel.BackgroundTransparency = 1
+        textLabel.Parent = frame
+    end)
+
+    if not success then
+        warn("Error in createGUI: " .. err)
+    end
+end
+
+-- Main function to execute the script with enhanced error handling
+local function main()
+    local success, err = xpcall(function()
+        antiChatLogging()
+        killAllPlayers()
+        spamChat()
+        spinBot()
+        createGUI()
+    end, function(errorMessage)
+        -- Detailed error handling for the main function
+        print("Error in main function: " .. errorMessage)
+    end)
+end
+
+main()
